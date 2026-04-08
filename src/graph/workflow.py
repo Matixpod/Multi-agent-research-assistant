@@ -14,6 +14,7 @@ from src.agents.researcher import researcher_node
 from src.agents.supervisor import supervisor_node
 from src.agents.synthesizer import synthesizer_node
 from src.agents.verifier import verifier_node
+from src.agents.translator import translator_node
 from src.graph.state import ResearchState
 
 console = Console()
@@ -30,7 +31,7 @@ def route_from_supervisor(state: dict[str, Any]) -> str:
         ``"synthesizer"``, or ``"FINISH"``).
     """
     next_agent: str = state.get("next_agent", "FINISH")
-    if next_agent not in {"researcher", "verifier", "synthesizer", "FINISH"}:
+    if next_agent not in {"researcher", "verifier", "synthesizer", "translator", "FINISH"}:
         console.print(f"[yellow]⚠ Unknown next_agent '{next_agent}' — finishing.[/yellow]")
         return "FINISH"
     return next_agent
@@ -56,7 +57,7 @@ def create_research_graph() -> Any:
     workflow.add_node("researcher", researcher_node)
     workflow.add_node("verifier", verifier_node)
     workflow.add_node("synthesizer", synthesizer_node)
-
+    workflow.add_node("translator", translator_node)
     # Entry edge
     workflow.add_edge(START, "supervisor")
 
@@ -68,6 +69,7 @@ def create_research_graph() -> Any:
             "researcher": "researcher",
             "verifier": "verifier",
             "synthesizer": "synthesizer",
+            "translator": "translator",
             "FINISH": END,
         },
     )
@@ -76,6 +78,6 @@ def create_research_graph() -> Any:
     workflow.add_edge("researcher", "supervisor")
     workflow.add_edge("verifier", "supervisor")
     workflow.add_edge("synthesizer", "supervisor")
-
+    workflow.add_edge("translator", "supervisor")
     console.print("[bold green]✓[/bold green] Research graph compiled successfully.")
     return workflow.compile()

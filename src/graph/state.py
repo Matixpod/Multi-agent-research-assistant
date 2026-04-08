@@ -34,6 +34,9 @@ class ResearchState(TypedDict):
 
     # Final output
     final_report: str
+    
+    # Translated output
+    translated_report: str
 
     # Orchestration
     current_agent: str
@@ -66,6 +69,7 @@ def create_initial_state(query: str, max_iterations: int = 3) -> ResearchState:
         verified_claims=[],
         disputed_claims=[],
         final_report="",
+        translated_report="",
         current_agent="supervisor",
         next_agent="",
         iteration=0,

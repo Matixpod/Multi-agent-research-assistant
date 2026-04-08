@@ -151,7 +151,7 @@ def main() -> None:
     # ------------------------------------------------------------------
     # Display results
     # ------------------------------------------------------------------
-    report = final_state.get("final_report", "")
+    report = final_state.get("translated_report") or final_state.get("final_report", "")
     errors = final_state.get("errors", [])
 
     if errors:
@@ -169,6 +169,7 @@ def main() -> None:
         # Save to file
         report_path = save_report(report, args.query, args.output)
         console.print(f"\n[bold green]✓ Report saved to:[/bold green] {report_path}")
+        
     else:
         console.print("\n[bold red]✗ No report was generated.[/bold red]")
         if args.verbose:

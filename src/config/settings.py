@@ -30,8 +30,8 @@ class Settings(BaseSettings):
     agent_model: str = "mistral:7b-instruct"
 
     # Research parameters
-    max_research_loops: int = 3
-    max_search_results: int = 5
+    max_research_loops: int = 6
+    max_search_results: int = 10
     model_temperature: float = 0.1
 
     # LangSmith (optional)

@@ -49,12 +49,23 @@ def search_web(query: str, max_results: int = 5) -> list[dict[str, Any]]:
     """
     try:
         tool = create_search_tool(max_results=max_results)
-        results = tool.invoke({"query": query})
+        raw_results = tool.invoke({"query": query})
 
-        # TavilySearchResults may return a list of dicts or a JSON string
-        if isinstance(results, str):
+        # Handle different Tavily response formats
+        if isinstance(raw_results, str):
             import json
-            results = json.loads(results)
+            raw_results = json.loads(raw_results)
+
+        # New Tavily format may wrap results in a dict
+        if isinstance(raw_results, dict) and "results" in raw_results:
+            results = raw_results["results"]
+        elif isinstance(raw_results, list):
+            results = raw_results
+        else:
+            results = []
+
+        # Filter only valid dicts with 'content' key
+        results = [r for r in results if isinstance(r, dict) and "content" in r]
 
         console.print(
             f"[bold green]✓[/bold green] Search returned "

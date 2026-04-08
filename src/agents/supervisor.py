@@ -16,7 +16,7 @@ from src.prompts.templates import SUPERVISOR_SYSTEM_PROMPT
 
 console = Console()
 
-VALID_AGENTS = {"researcher", "verifier", "synthesizer", "FINISH"}
+VALID_AGENTS = {"researcher", "verifier", "synthesizer", "translator", "FINISH"}
 
 
 def supervisor_node(state: dict[str, Any]) -> dict[str, Any]:
@@ -65,7 +65,8 @@ def supervisor_node(state: dict[str, Any]) -> dict[str, Any]:
     has_claims = bool(state.get("key_claims"))
     has_verification = bool(state.get("verification_results"))
     has_report = bool(state.get("final_report"))
-
+    has_translation = bool(state.get("translated_report"))
+    
     state_summary = (
         f"Iteration: {iteration + 1}/{max_iterations}\n"
         f"Research done: {'yes' if has_research else 'no'}\n"
@@ -75,6 +76,7 @@ def supervisor_node(state: dict[str, Any]) -> dict[str, Any]:
         f"(confirmed={len(state.get('verified_claims', []))}, "
         f"disputed={len(state.get('disputed_claims', []))})\n"
         f"Report generated: {'yes' if has_report else 'no'}\n"
+        f"Translation done: {'yes' if has_translation else 'no'}\n" 
         f"Errors: {state.get('errors', [])}\n"
     )
 
@@ -157,4 +159,6 @@ def _fallback_routing(state: dict[str, Any]) -> dict[str, str]:
         return {"next_agent": "verifier", "reasoning": "Research done, need verification."}
     if not state.get("final_report"):
         return {"next_agent": "synthesizer", "reasoning": "Verification done, need report."}
+    if not state.get("translated_report"):
+        return {"next_agent": "translator", "reasoning": "Need translation."}
     return {"next_agent": "FINISH", "reasoning": "All steps completed."}
